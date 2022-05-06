@@ -1,0 +1,3 @@
+[submodule "ddd-in-practice.wiki"]
+	path = ddd-in-practice.wiki
+	url = git@github.com:deathcoder/ddd-in-practice.wiki
