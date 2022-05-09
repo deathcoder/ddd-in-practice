@@ -1,5 +1,7 @@
 package com.example.dddinpractice.logic;
 
+import java.math.BigDecimal;
+
 import lombok.Builder;
 
 /**
@@ -7,7 +9,7 @@ import lombok.Builder;
  */
 @Builder
 public record Money(int oneCentCount, int tenCentCount, int quarterCount, int oneDollarCount, int fiveDollarCount, int twentyDollarCount) {
-    public Money plus(Money money) {
+    public Money add(Money money) {
         return Money.builder()
                 .oneCentCount(this.oneCentCount + money.oneCentCount)
                 .tenCentCount(this.tenCentCount + money.tenCentCount)
@@ -16,6 +18,27 @@ public record Money(int oneCentCount, int tenCentCount, int quarterCount, int on
                 .fiveDollarCount(this.fiveDollarCount + money.fiveDollarCount)
                 .twentyDollarCount(this.twentyDollarCount + money.twentyDollarCount)
                 .build();
+    }
+
+    public Money subtract(Money money) {
+        return Money.builder()
+                .oneCentCount(subtract(this.oneCentCount, money.oneCentCount, "one cent coins"))
+                .tenCentCount(subtract(this.tenCentCount, money.tenCentCount, "ten cent coins"))
+                .quarterCount(subtract(this.quarterCount, money.quarterCount, "quarter coins"))
+                .oneDollarCount(subtract(this.oneDollarCount, money.oneDollarCount, "one dollar bills"))
+                .fiveDollarCount(subtract(this.fiveDollarCount, money.fiveDollarCount, "five dollar bills"))
+                .twentyDollarCount(subtract(this.twentyDollarCount, money.twentyDollarCount, "twenty dollar bills"))
+                .build();
+    }
+
+    public BigDecimal getAmount() {
+        return BigDecimal
+                .valueOf(oneCentCount).multiply(new BigDecimal("0.01"))
+                .add(BigDecimal.valueOf(tenCentCount).multiply(new BigDecimal("0.1")))
+                .add(BigDecimal.valueOf(quarterCount).multiply(new BigDecimal("0.25")))
+                .add(BigDecimal.valueOf(oneDollarCount))
+                .add(BigDecimal.valueOf(fiveDollarCount).multiply(new BigDecimal("5")))
+                .add(BigDecimal.valueOf(twentyDollarCount).multiply(new BigDecimal("20")));
     }
 
     // ##########################################
@@ -69,5 +92,14 @@ public record Money(int oneCentCount, int tenCentCount, int quarterCount, int on
 
             return super.build();
         }
+    }
+
+    private int subtract(int amount1, int amount2, String moneyDescription) {
+        int result = amount1 - amount2;
+
+        if (result < 0) {
+            throw new IllegalStateException(String.format("Tried to subtract [%d] %s from the existing money, but it only contains [%d] %s", amount2, moneyDescription, amount1, moneyDescription));
+        }
+        return result;
     }
 }

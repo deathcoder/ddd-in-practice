@@ -1,6 +1,5 @@
 package com.example.dddinpractice.logic;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,7 +17,7 @@ public class SnackMachine extends Entity {
     private Money moneyInTransaction;
 
     public void insertMoney(Money money) {
-        this.moneyInTransaction = this.moneyInTransaction.plus(money);
+        this.moneyInTransaction = this.moneyInTransaction.add(money);
     }
 
     public void returnMoney() {
@@ -31,7 +30,7 @@ public class SnackMachine extends Entity {
     }
 
     public void buySnack() {
-        this.moneyInside = this.moneyInside.plus(this.moneyInTransaction);
+        this.moneyInside = this.moneyInside.add(this.moneyInTransaction);
 
 //        this.oneCentCountInTransaction = 0;
 //        this.tenCentCountInTransaction = 0;
