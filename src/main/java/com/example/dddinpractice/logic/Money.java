@@ -9,6 +9,14 @@ import lombok.Builder;
  */
 @Builder
 public record Money(int oneCentCount, int tenCentCount, int quarterCount, int oneDollarCount, int fiveDollarCount, int twentyDollarCount) {
+    public static final Money NONE = new Money(0, 0, 0, 0, 0, 0);
+    public static final Money CENT = new Money(1, 0, 0, 0, 0, 0);
+    public static final Money TEN_CENT = new Money(0, 1, 0, 0, 0, 0);
+    public static final Money QUARTER = new Money(0, 0, 1, 0, 0, 0);
+    public static final Money DOLLAR = new Money(0, 0, 0, 1, 0, 0);
+    public static final Money FIVE_DOLLAR = new Money(0, 0, 0, 0, 1, 0);
+    public static final Money TWENTY_DOLLAR = new Money(0, 0, 0, 0, 0, 1);
+
     public Money add(Money money) {
         return Money.builder()
                 .oneCentCount(this.oneCentCount + money.oneCentCount)
@@ -25,9 +33,9 @@ public record Money(int oneCentCount, int tenCentCount, int quarterCount, int on
                 .oneCentCount(subtract(this.oneCentCount, money.oneCentCount, "one cent coins"))
                 .tenCentCount(subtract(this.tenCentCount, money.tenCentCount, "ten cent coins"))
                 .quarterCount(subtract(this.quarterCount, money.quarterCount, "quarter coins"))
-                .oneDollarCount(subtract(this.oneDollarCount, money.oneDollarCount, "one dollar bills"))
-                .fiveDollarCount(subtract(this.fiveDollarCount, money.fiveDollarCount, "five dollar bills"))
-                .twentyDollarCount(subtract(this.twentyDollarCount, money.twentyDollarCount, "twenty dollar bills"))
+                .oneDollarCount(subtract(this.oneDollarCount, money.oneDollarCount, "one dollar notes"))
+                .fiveDollarCount(subtract(this.fiveDollarCount, money.fiveDollarCount, "five dollar notes"))
+                .twentyDollarCount(subtract(this.twentyDollarCount, money.twentyDollarCount, "twenty dollar notes"))
                 .build();
     }
 

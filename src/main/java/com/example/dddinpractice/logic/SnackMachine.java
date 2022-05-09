@@ -1,5 +1,9 @@
 package com.example.dddinpractice.logic;
 
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,30 +17,23 @@ import lombok.experimental.Accessors;
 @ToString
 @Accessors(chain = true)
 public class SnackMachine extends Entity {
-    private Money moneyInside;
-    private Money moneyInTransaction;
+    private Money moneyInside = Money.NONE;
+    private Money moneyInTransaction = Money.NONE;
 
     public void insertMoney(Money money) {
+        List<Money> coinsAndNotes = asList(Money.CENT, Money.TEN_CENT, Money.QUARTER, Money.DOLLAR, Money.FIVE_DOLLAR, Money.TWENTY_DOLLAR);
+        if (!coinsAndNotes.contains(money)) {
+            throw new IllegalArgumentException("Cannot insert more than one coin or note at a time");
+        }
         this.moneyInTransaction = this.moneyInTransaction.add(money);
     }
 
     public void returnMoney() {
-//        this.oneCentCountInTransaction = 0;
-//        this.tenCentCountInTransaction = 0;
-//        this.quarterCountInTransaction = 0;
-//        this.oneDollarCountInTransaction = 0;
-//        this.fiveDollarCountInTransaction = 0;
-//        this.twentyDollarCountInTransaction = 0;
+        moneyInTransaction = Money.NONE;
     }
 
     public void buySnack() {
         this.moneyInside = this.moneyInside.add(this.moneyInTransaction);
-
-//        this.oneCentCountInTransaction = 0;
-//        this.tenCentCountInTransaction = 0;
-//        this.quarterCountInTransaction = 0;
-//        this.oneDollarCountInTransaction = 0;
-//        this.fiveDollarCountInTransaction = 0;
-//        this.twentyDollarCountInTransaction = 0;
+        this.moneyInTransaction = Money.NONE;
     }
 }

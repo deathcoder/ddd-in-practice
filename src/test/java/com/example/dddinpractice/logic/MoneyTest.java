@@ -73,9 +73,9 @@ class MoneyTest {
             "2|0|0|0|0|0|Tried to subtract [2] one cent coins from the existing money, but it only contains [1] one cent coins",
             "0|3|0|0|0|0|Tried to subtract [3] ten cent coins from the existing money, but it only contains [2] ten cent coins",
             "0|0|4|0|0|0|Tried to subtract [4] quarter coins from the existing money, but it only contains [3] quarter coins",
-            "0|0|0|5|0|0|Tried to subtract [5] one dollar bills from the existing money, but it only contains [4] one dollar bills",
-            "0|0|0|0|6|0|Tried to subtract [6] five dollar bills from the existing money, but it only contains [5] five dollar bills",
-            "0|0|0|0|0|7|Tried to subtract [7] twenty dollar bills from the existing money, but it only contains [6] twenty dollar bills",
+            "0|0|0|5|0|0|Tried to subtract [5] one dollar notes from the existing money, but it only contains [4] one dollar notes",
+            "0|0|0|0|6|0|Tried to subtract [6] five dollar notes from the existing money, but it only contains [5] five dollar notes",
+            "0|0|0|0|0|7|Tried to subtract [7] twenty dollar notes from the existing money, but it only contains [6] twenty dollar notes",
     }, delimiter = '|')
     void cannotSubtractMoreThanExists(int oneCentCount, int tenCentCount, int quarterCount, int oneDollarCount, int fiveDollarCount, int twentyDollarCount, String expectedError) {
         // Arrange
@@ -97,12 +97,16 @@ class MoneyTest {
                 .twentyDollarCount(twentyDollarCount)
                 .build();
 
+        // Act
         IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> existingMoney.subtract(subtractionMoney));
+
+        // Assert
         assertThat(illegalStateException.getMessage()).isEqualTo(expectedError);
     }
 
     @Test
     public void twoMoneyInstancesEqualIfContainTheSameMoneyAmount() {
+        // Arrange
         Money money = Money.builder()
                 .oneCentCount(1)
                 .tenCentCount(2)
@@ -121,12 +125,14 @@ class MoneyTest {
                 .twentyDollarCount(6)
                 .build();
 
+        // Assert
         assertThat(money).isEqualTo(sameMoney);
         assertThat(money).hasSameHashCodeAs(sameMoney);
     }
 
     @Test
     public void twoMoneyInstancesDoNotEqualIfContainDifferentMoneyAmounts() {
+        // Arrange
         Money dollar = Money.builder()
                 .oneDollarCount(4)
                 .build();
@@ -135,6 +141,7 @@ class MoneyTest {
                 .oneCentCount(1)
                 .build();
 
+        // Assert
         assertThat(dollar).isNotEqualTo(penny);
         assertThat(dollar).doesNotHaveSameHashCodeAs(penny);
     }
@@ -149,6 +156,7 @@ class MoneyTest {
             "0,0,0,0,0,-6,twentyDollarCount cannot be negative",
     })
     public void cannotCreateMoneyWithNegativeValue(int oneCentCount, int tenCentCount, int quarterCount, int oneDollarCount, int fiveDollarCount, int twentyDollarCount, String expectedError) {
+        // Act
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> Money.builder()
                 .oneCentCount(oneCentCount)
                 .tenCentCount(tenCentCount)
@@ -158,12 +166,13 @@ class MoneyTest {
                 .twentyDollarCount(twentyDollarCount)
                 .build());
 
+        // Assert
         assertThat(illegalArgumentException.getMessage()).isEqualTo(expectedError);
     }
 
     @ParameterizedTest
     @CsvSource(value = {
-            "0,0,0,0,0,0,0.00",
+            "0,0,0,0,0,0,0",
             "1,0,0,0,0,0,0.01",
             "1,2,0,0,0,0,0.21",
             "1,2,3,0,0,0,0.96",
@@ -171,9 +180,10 @@ class MoneyTest {
             "1,2,3,4,5,0,29.96",
             "1,2,3,4,5,6,149.96",
             "11,0,0,0,0,0,0.11",
-            "110,0,0,0,100,0,501.10",
+            "110,0,0,0,100,0,501.1",
     })
     public void amountIsCalculatedCorrectly(int oneCentCount, int tenCentCount, int quarterCount, int oneDollarCount, int fiveDollarCount, int twentyDollarCount, BigDecimal expectedAmount) {
+        // Arrange
         Money money = Money.builder()
                 .oneCentCount(oneCentCount)
                 .tenCentCount(tenCentCount)
@@ -183,6 +193,9 @@ class MoneyTest {
                 .twentyDollarCount(twentyDollarCount)
                 .build();
 
-        assertThat(money.getAmount()).isEqualTo(expectedAmount);
+        // Assert
+        assertThat(money.getAmount())
+                .usingComparator(BigDecimal::compareTo)
+                .isEqualTo(expectedAmount);
     }
 }
